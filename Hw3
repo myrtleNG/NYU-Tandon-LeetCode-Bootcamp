@@ -1,0 +1,79 @@
+##876. Middle of the Linked List
+class Solution:
+    def middleNode(self, head: Optional[ListNode]) -> Optional[ListNode]:
+        len_list = 0
+        start = node = head
+        while start:
+            len_list += 1
+            start = start.next
+        middle = len_list // 2
+        counter = 0
+        while node:
+            if counter == middle:
+                return node
+            else:
+                node = node.next
+                counter += 1
+        return None
+
+##36. Valid Sudoku
+class Solution:
+    def isValidSudoku(self, board: List[List[str]]) -> bool:
+        cols = collections.defaultdict(set)
+        rows = collections.defaultdict(set)
+        squares = collections.defaultdict(set)  
+
+        for r in range(9):
+            for c in range(9):
+                if board[r][c] == ".":
+                    continue
+                if (board[r][c] in rows[r] or
+                    board[r][c] in cols[c] or
+                    board[r][c] in squares[(r//3, c//3)]):
+                    return False  
+                cols[c].add(board[r][c])
+                rows[r].add(board[r][c])
+                squares[(r//3, c//3)].add(board[r][c])  
+        return True
+
+
+##25. Reverse Nodes in k-Group
+class Solution:
+    def reverseKGroup(self, head: Optional[ListNode], k: int) -> Optional[ListNode]:
+        current = head
+        ktail = None
+        new_head = None
+
+        while current:
+            count = 0
+            current = head
+            while count < k and current:
+                current = current.next
+                count += 1
+            if count == k:
+                rev_head = self.reverse(head, k)
+
+                if not new_head:
+                    new_head = rev_head
+
+                if ktail:
+                    ktail.next = rev_head
+
+                ktail = head
+                head = current
+        if ktail:
+            ktail.next = head
+        return new_head if new_head else head  
+
+
+    def reverse(self, head, k):
+        new_head = None
+        pre = head
+
+        while k:
+            next_node = pre.next
+            pre.next = new_head
+            new_head = pre
+            pre = next_node
+            k -= 1
+        return new_head

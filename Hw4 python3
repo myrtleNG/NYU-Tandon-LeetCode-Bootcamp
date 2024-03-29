@@ -1,0 +1,85 @@
+##815. Bus Routes
+class Solution:
+    def numBusesToDestination(self, routes: List[List[int]], source: int, target: int) -> int:
+        if source == target:
+            return 0
+        
+        graph = collections.defaultdict(set)
+        queue = collections.deque([(source, 0)])
+        
+        # Build the graph
+        for bus, route in enumerate(routes):
+            for stop in route:
+                graph[stop].add(bus)
+
+        visited_stops = set() 
+        visited_buses = set() 
+        
+        while queue:
+            stop, route_len = queue.popleft()
+
+            if stop == target:
+                return route_len
+
+            for bus in graph[stop]:
+                if bus not in visited_buses:
+                    visited_buses.add(bus)
+
+                    for new_stop in routes[bus]:  # Fix variable name and loop
+                        if new_stop not in visited_stops:
+                            visited_stops.add(new_stop)
+                            queue.append((new_stop, route_len + 1))  # Fix variable name
+
+        return -1
+
+
+
+##394. Decode String
+
+class Solution:
+    def decodeString(self, s: str) -> str:
+        stack = []
+
+        i = 0
+        while i < len(s):
+            if s[i] != "]":
+                stack.append(s[i])
+                i += 1
+            else:
+                substr = ""
+                while stack[-1] != "[":
+                    substr = stack.pop() + substr
+                stack.pop()  # Pop "["
+
+                k = ""
+                while stack and stack[-1].isdigit():
+                    k = stack.pop() + k
+
+                stack.append(substr * int(k))
+                i += 1
+
+        return "".join(stack)
+
+
+##2327. Number of People Aware of a Secret
+
+class Solution:
+    def peopleAwareOfSecret(self, n: int, delay: int, forget: int) -> int:
+        MOD = 10 ** 9 + 7
+
+        dp = [0] * forget
+        dp[forget - 1] = 1
+        
+        for _ in range(n - 1):
+            ndp = [0] * forget
+
+            for i in range(1, forget - delay + 1):
+                ndp[forget - 1] += dp[i]
+
+            for i in range(forget - 1):
+                ndp[i] += dp[i + 1]
+                ndp[i] %= MOD
+            
+            dp = ndp
+        
+        return sum(dp) % MOD
